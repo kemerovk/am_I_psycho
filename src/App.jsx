@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Menu } from 'antd';
+import { Menu, Card, Descriptions } from 'antd'; // Добавляем компоненты для отображения данных
 import axios from 'axios';
 
 // Вспомогательная функция для создания элементов меню
@@ -14,6 +14,7 @@ const getItem = (label, key, icon, children) => {
 
 const App = () => {
   const [clients, setClients] = useState([]); // Состояние для хранения списка клиентов
+  const [selectedClient, setSelectedClient] = useState(null); // Состояние для хранения выбранного клиента
 
   // Функция для получения данных клиентов
   const fetchClients = async () => {
@@ -42,21 +43,42 @@ const App = () => {
 
   // Обработчик клика по пункту меню
   const onClick = (e) => {
-    console.log('click ', e);
+    const selected = clients.find(client => client.id === parseInt(e.key)); // Находим выбранного клиента
+    setSelectedClient(selected); // Сохраняем выбранного клиента в состояние
   };
 
-  // Рендерим меню
   return (
-      <Menu
-          onClick={onClick}
-          style={{
-            width: 256,
-          }}
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
-          mode="inline"
-          items={menuItems}
-      />
+      <div style={{ display: 'flex' }}>
+        {/* Меню */}
+        <Menu
+            onClick={onClick}
+            style={{
+              width: 256,
+            }}
+            defaultSelectedKeys={['1']}
+            defaultOpenKeys={['sub1']}
+            mode="inline"
+            items={menuItems}
+        />
+
+        {/* Блок для отображения данных клиента */}
+        <div style={{ flex: 1, padding: '20px' }}>
+          {selectedClient ? (
+              <Card title="Информация о клиенте" style={{ width: '100%' }}>
+                <Descriptions bordered column={1}>
+                  <Descriptions.Item label="ID">{selectedClient.id}</Descriptions.Item>
+                  <Descriptions.Item label="Имя">{selectedClient.name}</Descriptions.Item>
+                  <Descriptions.Item label="Возраст">{selectedClient.age}</Descriptions.Item>
+                  {/* Добавьте другие поля, если они есть */}
+                </Descriptions>
+              </Card>
+          ) : (
+              <div style={{ textAlign: 'center', marginTop: '20%' }}>
+                <h2>Выберите клиента из меню</h2>
+              </div>
+          )}
+        </div>
+      </div>
   );
 };
 
